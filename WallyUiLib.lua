@@ -1,4 +1,3 @@
-if game.GameId == 833423526 then print("magik"); print("uwu"); end
 local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}};
 local defaults; do
     local dragger = {}; do
@@ -20,7 +19,7 @@ local defaults; do
                             local objectPosition = Vector2.new(mouse.X - frame.AbsolutePosition.X, mouse.Y - frame.AbsolutePosition.Y);
                             while heartbeat:wait() and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                                 pcall(function()
-                                    frame:TweenPosition(UDim2.new(0, mouse.X - objectPosition.X + (frame.Size.X.Offset * frame.AnchorPoint.X), 0, mouse.Y - objectPosition.Y + (frame.Size.Y.Offset * frame.AnchorPoint.Y)), 'Out', 'Linear', 0.1, true);
+                                    frame:TweenPosition(UDim2.new(0, mouse.X - objectPosition.X, 0, mouse.Y - objectPosition.Y), 'Out', 'Linear', 0.1, true);
                                 end)
                             end
                         end
@@ -34,6 +33,7 @@ local defaults; do
                 end)
             end
         end
+
 
         game:GetService('UserInputService').InputBegan:connect(function(key, gpe)
             if (not gpe) then
@@ -144,8 +144,8 @@ local defaults; do
                 local targetSize = window.toggled and UDim2.new(1, 0, 0, y+5) or UDim2.new(1, 0, 0, 0);
                 local targetDirection = window.toggled and "In" or "Out"
 
-                window.container:TweenSize(targetSize, targetDirection, "Quad", 0.15, true)
-                wait(.15)
+                window.container:TweenSize(targetSize, targetDirection, "Quint", .3, true)
+                wait(.3)
                 if window.toggled then
                     window.container.ClipsDescendants = false;
                 end
@@ -174,29 +174,6 @@ local defaults; do
             return c
         end
         
-        function types:Label(text)
-            local v = game:GetService'TextService':GetTextSize(text, 18, Enum.Font.SourceSans, Vector2.new(math.huge, math.huge))
-            local object = library:Create('Frame', {
-                Size = UDim2.new(1, 0, 0, v.Y + 5);
-                BackgroundTransparency  = 1;
-                library:Create('TextLabel', {
-                    Size = UDim2.new(1, 0, 1, 0);
-                    Position = UDim2.new(0, 10, 0, 0);
-                    LayoutOrder = self:GetOrder();
-
-                    Text = text;
-                    TextSize = 18;
-                    Font = Enum.Font.SourceSans;
-                    TextColor3 = Color3.fromRGB(255, 255, 255);
-                    BackgroundTransparency = 1;
-                    TextXAlignment = Enum.TextXAlignment.Left;
-                    TextWrapped = true;
-                });
-                Parent = self.container
-            })
-            self:Resize();
-        end
-
         function types:Toggle(name, options, callback)
             local default  = options.default or false;
             local location = options.location or self.flags;
@@ -380,14 +357,10 @@ local defaults; do
             local callback     = callback or function() end;
             local default      = options.default;
 
-            local passed = true;
-            if keyboardOnly and (tostring(default):find('MouseButton')) then 
-                passed = false 
+            if keyboardOnly and (not tostring(default):find('MouseButton')) then
+                location[flag] = default
             end
-            if passed then 
-               location[flag] = default 
-            end
-           
+            
             local banned = {
                 Return = true;
                 Space = true;
@@ -593,7 +566,7 @@ local defaults; do
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
                             Size     = UDim2.new(1, 0, 0, 1);
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+                            BackgroundColor3 = library.options.textcolor;
                             BorderSizePixel = 0;
                         });
                     })
@@ -776,7 +749,7 @@ local defaults; do
                                         child:Destroy();
                                     end
                                 end
-                                box:FindFirstChild('Box').Container:TweenSize(UDim2.new(1, 0, 0, 0), 'Out', 'Quad', 0.25, true)
+                                box:FindFirstChild('Box').Container:TweenSize(UDim2.new(1, 0, 0, 0), 'Out', 'Quint', .3, true)
                             end)
                         end
                     end
@@ -790,7 +763,7 @@ local defaults; do
                     box:FindFirstChild('Box').Container.ScrollBarThickness = 5;
                 end
 
-                box:FindFirstChild('Box').Container:TweenSize(UDim2.new(1, 0, 0, y), 'Out', 'Quad', 0.25, true)
+                box:FindFirstChild('Box').Container:TweenSize(UDim2.new(1, 0, 0, y), 'Out', 'Quint', .3, true)
                 box:FindFirstChild('Box').Container.CanvasSize = UDim2.new(1, 0, 0, (20 * (#c)) - 20)
             end
 
@@ -927,7 +900,7 @@ local defaults; do
                     end)
                 end
                 
-                container:TweenSize(goSize, 'Out', 'Quad', 0.15, true)
+                container:TweenSize(goSize, 'Out', 'Quint', .3, true)
                 
                 local function isInGui(frame)
                     local mloc = game:GetService('UserInputService'):GetMouseLocation();
@@ -944,7 +917,7 @@ local defaults; do
                         check:FindFirstChild('dropdown_lbl'):WaitForChild('Selection').TextColor3 = library.options.textcolor
                         check:FindFirstChild('dropdown_lbl'):WaitForChild('Selection').Text       = location[flag];
 
-                        container:TweenSize(UDim2.new(1, 0, 0, 0), 'In', 'Quad', 0.15, true)
+                        container:TweenSize(UDim2.new(1, 0, 0, 0), 'In', 'Quint', .3, true)
                         wait(0.15)
 
                         game:GetService('Debris'):AddItem(container, 0)
@@ -988,30 +961,7 @@ local defaults; do
         return obj
     end
     
-    function library:CreateWindow(name, options)
-        if (not library.container) then
-            library.container = self:Create("ScreenGui", {
-                self:Create('Frame', {
-                    Name = 'Container';
-                    Size = UDim2.new(1, -30, 1, 0);
-                    Position = UDim2.new(0, 20, 0, 20);
-                    BackgroundTransparency = 1;
-                    Active = false;
-                });
-                Parent = game:GetService("CoreGui");
-            }):FindFirstChild('Container');
-        end
-        
-        if (not library.options) then
-            library.options = setmetatable(options or {}, {__index = defaults})
-        end
-        
-        local window = types.window(name, library.options);
-        dragger.new(window.object);
-        return window
-    end
-    
-    default = {
+	default = {
         topcolor       = Color3.fromRGB(30, 30, 30);
         titlecolor     = Color3.fromRGB(255, 255, 255);
         
@@ -1040,6 +990,32 @@ local defaults; do
         placeholdercolor = Color3.fromRGB(255, 255, 255);
         titlestrokecolor = Color3.fromRGB(0, 0, 0);
     }
+	
+    function library:CreateWindow(name, options)
+		
+        if (not library.container) then
+            library.container = self:Create("ScreenGui", {
+                self:Create('Frame', {
+                    Name = 'Container';
+                    Size = UDim2.new(1, -30, 1, 0);
+                    Position = UDim2.new(0, 20, 0, 20);
+                    BackgroundTransparency = 1;
+                    Active = false;
+                });
+                Parent = game:GetService("CoreGui");
+            }):FindFirstChild('Container');
+        end
+        if (not library.options) then
+			library.options = setmetatable(options or {}, {__index = defaults})
+        end
+		if (options) then
+			library.options = setmetatable(options, {__index = default})
+		end
+		
+        local window = types.window(name, library.options);
+        dragger.new(window.object);
+        return window
+    end
 
     library.options = setmetatable({}, {__index = default})
 
