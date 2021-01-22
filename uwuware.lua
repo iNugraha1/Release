@@ -1617,7 +1617,7 @@ function library:Init()
 		Size = UDim2.new(0, 0, 0, 0),
 		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 		Parent = self.base,
-		Visbile = false
+		Visible = false
 	})
 	
 	for _, window in next, self.windows do
