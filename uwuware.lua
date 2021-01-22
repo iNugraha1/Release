@@ -1668,3 +1668,5 @@ inputService.InputChanged:connect(function(input)
 end)
 
 return library
+
+-- Edited for Free exploit that didn't have syn.protect.gui or gethiddengui and annoying cursor
